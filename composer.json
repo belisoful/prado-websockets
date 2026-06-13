@@ -1,0 +1,79 @@
+{
+	"name": "pradosoft/prado-websockets",
+	"type": "prado4-extension",
+	"description": "WebSocket server and client for the PRADO PHP framework: RFC 6455 over HTTP/1.1, with HTTP/2 (RFC 8441) via nghttp2.",
+	"keywords": [ "prado", "framework", "websocket", "rfc6455", "rfc8441", "http2", "nghttp2", "extension"],
+	"homepage": "https://github.com/pradosoft/prado-websockets",
+	"license": "BSD-3-Clause",
+	"authors": [
+		{
+			"name": "Brad Anderson",
+			"email": "belisoful@icloud.com",
+			"role": "Developer",
+			"homepage": "https://github.com/belisoful"
+		}
+	],
+	"autoload": {
+		"psr-4": {
+			"Prado\\": "src"
+		}
+	},
+	"repositories": [
+		{
+			"type": "composer",
+			"url": "https://asset-packagist.org"
+		},
+		{
+			"type": "path",
+			"url": "../prado",
+			"options": {
+				"symlink": true,
+				"versions": {
+					"pradosoft/prado": "4.4.0"
+				}
+			}
+		},
+		{
+			"type": "path",
+			"url": "../prado-http2",
+			"options": {
+				"symlink": true,
+				"versions": {
+					"pradosoft/prado-http2": "1.0.0"
+				}
+			}
+		}
+	],
+	"require": {
+		"php": ">=8.1.0"
+	},
+	"suggest": {
+		"ext-openssl": "TLS with ALPN for wss:// and HTTP/2 over TLS (h2).",
+		"ext-sockets": "Faster socket primitives for the standalone server.",
+		"lib-nghttp2": "The system libnghttp2 shared library, used by pradosoft/prado-http2 for HTTP/2.",
+		"ext-ffi": "Required by pradosoft/prado-http2 to bind libnghttp2 for HTTP/2.",
+		"pradosoft/prado-http2": "HTTP/2 (RFC 8441) WebSocket multiplexing; without it the server serves HTTP/1.1 only."
+	},
+	"require-dev" : {
+		"pradosoft/prado" : "^4.4",
+		"pradosoft/prado-http2" : "^1.0",
+		"phpunit/phpunit" : "^10",
+		"phpdocumentor/shim": "^3",
+		"friendsofphp/php-cs-fixer": "^3.94",
+		"phpstan/phpstan": "^2.1"
+	},
+	"config": {
+		"platform": {
+			"php": "8.1"
+		},
+		"allow-plugins": {
+			"phpdocumentor/shim": true
+		}
+	},
+	"scripts": {
+		"unittest": "vendor/bin/phpunit --testsuite unit"
+	},
+	"extra": {
+		"bootstrap": "Prado\\IO\\Socket\\WebSocket\\TWebSocketModule"
+	}
+}
