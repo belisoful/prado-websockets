@@ -203,12 +203,38 @@ class TWebSocketHandshake
 	 */
 	public static function acceptConnection(StreamInterface $stream, array $extraHeaders = []): array
 	{
+		$request = self::receiveRequest($stream);
+		$stream->write(self::buildServerResponse($request['headers']['sec-websocket-key'], $extraHeaders));
+		return $request;
+	}
+
+	/**
+	 * Reads and validates an upgrade request without responding, so a caller can authorize it before
+	 * completing the handshake.  Pair with {@see buildServerResponse()} to accept or
+	 * {@see buildRejection()} to refuse.
+	 * @param StreamInterface $stream The accepted transport stream.
+	 * @throws TWebSocketException When the request is not a valid WebSocket upgrade.
+	 * @return array{requestLine: string, method: ?string, target: ?string, protocol: string, statusCode: ?int, headers: array<string, string>, body: string}
+	 *   The parsed request.
+	 */
+	public static function receiveRequest(StreamInterface $stream): array
+	{
 		$request = self::parseHttpMessage(self::readHandshake($stream));
 		if (!self::isUpgradeRequest($request['headers'])) {
 			throw new TWebSocketException('websocket_handshake_not_upgrade');
 		}
-		$stream->write(self::buildServerResponse($request['headers']['sec-websocket-key'], $extraHeaders));
 		return $request;
+	}
+
+	/**
+	 * Builds an HTTP error response that refuses an upgrade before the 101.
+	 * @param int $status The status code.
+	 * @param string $reason The reason phrase.
+	 * @return string The response head.
+	 */
+	public static function buildRejection(int $status = 403, string $reason = 'Forbidden'): string
+	{
+		return "HTTP/1.1 {$status} {$reason}\r\nConnection: close\r\nContent-Length: 0\r\n\r\n";
 	}
 
 	/**
