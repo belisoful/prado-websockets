@@ -16,7 +16,6 @@ use Prado\IO\Socket\WebSocket\TWebSocketHandshake;
 use Prado\Prado;
 use Prado\TComponent;
 use Prado\TPropertyValue;
-use Prado\Web\THttpHeaderName;
 
 /**
  * TMeshBackplane class.
@@ -298,17 +297,15 @@ class TMeshBackplane extends TComponent implements IWebSocketBackplane
 		if ($this->_secret === '') {
 			return true;
 		}
-		$key = $headers[strtolower(THttpHeaderName::SecWebSocketKey)] ?? '';
+		$key = $headers['sec-websocket-key'] ?? '';
 		$provided = $headers[strtolower(self::AUTH_HEADER)] ?? '';
 		return $key !== '' && $provided !== '' && hash_equals($this->authToken($key), $provided);
 	}
 
 	/**
-	 * Computes the authentication proof for a handshake key.  The secret is first reduced with SHA-1
-	 * to a fixed-length value, standardizing keys of any length and adding a layer over the raw
-	 * secret, then keys an HMAC-SHA256 of the handshake key.
+	 * Computes the authentication proof for a handshake key.
 	 * @param string $key The connection's `Sec-WebSocket-Key`.
-	 * @return string The base64 HMAC-SHA256 of the key under the SHA-1 of the shared secret.
+	 * @return string The base64 HMAC-SHA256 of the key under the shared secret.
 	 */
 	private function authToken(string $key): string
 	{
